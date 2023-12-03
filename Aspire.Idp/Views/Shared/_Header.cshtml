@@ -1,0 +1,101 @@
+﻿@{
+}
+
+
+@if (User.Identity.IsAuthenticated && !Context.Request.Path.Value.ToString().Contains("/Account/Register"))
+{
+    <div id="header">
+        <el-card class="header_card">
+
+            <el-row class="tac">
+                <el-col :span="4" style="display: flex;">
+                    <el-link :underline="false" href="/" style="font-size: 22px;font-weight: 600;padding-left: 20px;">Aspire.Idp</el-link>
+                </el-col>
+
+                <el-col :span="20">
+                    <el-menu default-active="/" style="direction: rtl;" v-on:select="select"
+                             mode="horizontal">
+                       
+                        <el-sub-menu index="">
+                            <template #title>
+                                <el-text>设置 - @User.Identity.Name</el-text>
+                            </template>
+                           
+                            <template v-for="(item,index) in menus" :key="index">
+                                <el-menu-item :index="item.index">
+                                    <el-text>{{item.text}}</el-text>
+                                </el-menu-item>
+                            </template>
+
+                        </el-sub-menu>
+
+                    </el-menu>
+
+                </el-col>
+            </el-row>
+        </el-card>
+    </div>
+
+    <script>
+        const HeaderApp = {
+            data() {
+                return {
+                    menus: [
+                        {
+                            index: '/Account/Users',
+                            text: '用户',
+                        },
+                        {
+                            index: '/ClientsManager/Index',
+                            text: '客户端',
+                        },
+                        {
+                            index: '/ApiResourcesManager/Index',
+                            text: '资源api',
+                        },
+                        {
+                            index: '/Account/ResetPassword',
+                            text: '更改密码',
+                        },
+                        {
+                            index: '/Grants/Index',
+                            text: '授权',
+                        },
+                        {
+                            index: '/Account/PersonalCenter',
+                            text: '个人中心',
+                        },
+                        {
+                            index: '/Account/Logout',
+                            text: '注销',
+                        }
+                    ]
+                }
+            },
+            methods: {
+                select(index) {
+                    if (index){
+                        location.href = index;  // + '?returnUrl=' + encodeURIComponent(window.location.pathname);
+                    }
+                },
+            }
+        };
+        const headerApp = Vue.createApp(HeaderApp);
+        headerApp.use(ElementPlus);
+        headerApp.mount("#header");
+
+    </script>
+
+    <style>
+        .header_card {
+            margin: 8px 40px;
+        }
+        .el-menu--horizontal.el-menu {
+            border-bottom: none;
+        }
+
+        #header .el-card__body{
+            padding: 8px 20px;
+        }
+    </style>
+}

@@ -1,0 +1,16 @@
+﻿[
+    {
+        "outputFile": "wwwroot/css/login.css",
+        "inputFile": "wwwroot/css/login.less",
+        "minify": {
+            "enabled": true
+        }
+    },
+    {
+        "outputFile": "wwwroot/css/global.css",
+        "inputFile": "wwwroot/css/global.less",
+        "minify": {
+            "enabled": true
+        }
+    }
+]

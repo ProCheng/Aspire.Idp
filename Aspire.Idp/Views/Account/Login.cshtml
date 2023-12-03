@@ -1,0 +1,185 @@
+﻿@model LoginViewModel
+
+<div id="app">
+
+    <el-image class="login_left" src="/image/login_left.jpg" fit="cover"></el-image>
+    <div class="login_right">
+        <el-card shadow="always" class="login_box">
+
+
+            <el-tabs v-model="actionName">
+                <el-tab-pane :label="actionName" name="登录">
+
+                    @if (Model.EnableLocalLogin)
+                    {
+                        <el-form :model="form" style="margin-top: 30px;" ref="formRef" :rules="rules">
+                            @Html.AntiForgeryToken()
+                            <el-form-item prop="UserName">
+                                <el-input v-model="form.UserName" placeholder="用户名或邮箱" v-on:keyup.enter="$refs.Password.focus()"></el-input>
+                            </el-form-item>
+                            <el-form-item prop="Password">
+                                <el-input type="password" v-model="form.Password" ref="Password" placeholder="密码" v-on:keyup.enter="submit"></el-input>
+                            </el-form-item>
+                            <el-form-item style="margin-top: 35px;">
+                                <el-checkbox v-model="form.RememberLogin" label="记住登录" border></el-checkbox>
+
+                                <el-link type="primary" href="/Account/Register">没有账号? 去注册</el-link>
+                                <el-link type="info" href="/Account/ForgotPassword">忘记密码？重置</el-link>
+
+                            </el-form-item>
+                            <div style="text-align: right;margin-top: 40px">
+                                <el-button type="primary" v-on:click="submit">确定</el-button>
+                                <el-button v-on:click="back">返回</el-button>
+                            </div>
+
+
+                        </el-form>
+                    }
+                    @if (Model.VisibleExternalProviders.Any())
+                    {
+                        <div class="col-md-6 col-sm-6 external-providers">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">外部登录</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <ul class="list-inline">
+                                        @foreach (var provider in Model.VisibleExternalProviders)
+                                        {
+                                            <li>
+                                                <a class="btn btn-default"
+                                                   asp-controller="External"
+                                                   asp-action="Challenge"
+                                                   asp-route-provider="@provider.AuthenticationScheme"
+                                                   asp-route-returnUrl="@Model.ReturnUrl">
+                                                    @provider.DisplayName
+                                                </a>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    @if (!Model.EnableLocalLogin && !Model.VisibleExternalProviders.Any())
+                    {
+                        <div class="alert alert-warning">
+                            <strong>
+                                无效的登录请求
+                            </strong>
+                            没有为此客户端配置登录方案
+                        </div>
+                    }
+
+
+                </el-tab-pane>
+             
+            </el-tabs>
+
+           
+        </el-card>
+        <footer style="width:90%;position: absolute; bottom: 0;">
+            <partial name="_Footer" />
+        </footer>
+    </div>
+    
+   
+</div>
+
+
+<script>
+    const App = {
+        data() {
+            return {
+                actionName: "登录",
+                rules: {
+                    UserName: [
+                        {
+                            required: true,
+                            message: '用户名不能为空',
+                            trigger: 'change',
+                        },
+                    ],
+                    Password: [
+                        {
+                            required: true,
+                            message: '请输入密码',
+                            trigger: 'change',
+                        },
+                        {
+                            min: 6,
+                            max: 20,
+                            message: '密码长度在6到20之间',
+                            trigger: 'change'
+                        },
+
+                    ]
+                },
+                form: {
+                    UserName: "2263666854",
+                    Password: "Qq2263666854",
+                    RememberLogin: false,
+                    Button: 'login',    // 本地登录
+                }
+            }
+        },
+        methods: {
+            submit() {
+                this.$refs.formRef.validate(async (valid) => {
+                    if (valid) {
+
+                        let res = await axios.post('/OAuth2/Authorize', {
+                            ...this.form,
+                        });
+                        ElementPlus.ElMessage({
+                            message: "登录成功",
+                            type: 'success',
+                        })
+                        window.location.href = res.data;
+
+                    } else {
+                        return false
+                    }
+                })
+            },
+            back() { 
+                window.history.go(-1)
+            }
+        }
+    };
+    const app = Vue.createApp(App);
+    app.use(ElementPlus);
+    app.mount("#app");
+</script>
+
+<style>
+    #app {
+        height: 100%;
+        display: flex;
+    }
+    .login_left {
+        object-fit: cover;
+        height: 100%;
+        width: 375px;
+        background-size: cover;
+    }
+    .login_right {
+        padding: 10px 20px;
+        flex: 1;
+        position: relative;
+    }
+    /* 登录小容器 */
+    .login_box {
+        box-sizing: border-box;
+        width: 480px;
+        border-radius: 15px;
+        box-shadow: 0 20px 50px 0 hsl(0deg 0% 64% / 29%);
+        margin: 150px auto 0;
+        padding: 25px 30px;
+    }
+  
+    .el-link {
+        margin-left: 12px;
+        font-size: 10px;
+    }
+</style>

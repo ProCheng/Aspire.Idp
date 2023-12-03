@@ -1,0 +1,111 @@
+﻿@model ConsentViewModel
+
+
+
+<div id="app">
+    @Html.AntiForgeryToken()
+    <div class="login_right">
+        <el-card shadow="always" class="login_box">
+
+            <template #header>
+                <img v-if="consent.ClientLogoUrl" :src="consent.ClientLogoUrl" />
+                <h3>{{consent.ClientName}} 正在请求您的许可</h3>
+            </template>
+
+            <el-form label-width="120px" style="margin-top: 30px;" ref="formRef">
+
+                <el-form-item label="个人信息">
+                    <el-checkbox-group v-model="selfInfo">
+                        <el-checkbox :disabled="item.Required" :checked="item.Checked" v-for="(item,index) in consent.IdentityScopes" :label="item.DisplayName"></el-checkbox>
+                    </el-checkbox-group>
+                </el-form-item>
+
+                <el-form-item label="应用程序访问">
+                    <el-checkbox-group v-model="applicationInfo">
+                        <el-checkbox :disabled="item.Required" :checked="item.Checked" v-for="(item,index) in consent.ApiScopes" :label="item.DisplayName"></el-checkbox>
+                    </el-checkbox-group>
+                </el-form-item>
+
+                <el-form-item label="描述">
+                    <el-input v-model="Description" placeholder="请填写您的描述" v-on:keyup.enter="submit"></el-input>
+                </el-form-item>
+
+                <el-form-item v-if="consent.AllowRememberConsent" label="记住我的决定">
+                    <el-checkbox :checked="consent.RememberConsent" v-model="RememberConsent" label="记住登录"></el-checkbox>
+                </el-form-item>
+               
+                <div style="text-align: right;margin-top: 40px">
+                    <el-button type="primary" v-on:click="submit('yes')">确定</el-button>
+                    <el-button v-on:click="submit('no')">>取消</el-button>
+                </div>
+
+            </el-form>
+
+
+        </el-card>
+    </div>
+</div>
+
+<script>
+    const App = {
+        data() {
+            return {
+                consent: @Html.Raw(JsonConvert.SerializeObject(Model)),
+
+                selfInfo: [],           // 个人信息
+                applicationInfo: [],    // 应用程序访问
+
+                Description: '',               // 描述
+                RememberConsent: false, // 记住我的决定
+            }
+        },
+        methods: {
+           async submit(btn) {
+                let res = await axios.post('/Consent/Index', {
+
+                    Button: btn,
+                    ScopesConsented: [...this.consent.IdentityScopes.filter(i => this.selfInfo.includes(i.DisplayName)).map(i => i.Value),
+                    ...this.consent.ApiScopes.filter(i => this.applicationInfo.includes(i.DisplayName)).map(i => i.Value)],
+                    RememberConsent: this.RememberConsent,
+                    ReturnUrl: this.consent.ReturnUrl,
+                    Description: this.Description
+
+                });
+                ElementPlus.ElMessage({
+                    message: "更新成功",
+                    type: 'success',
+                })
+                window.location.href = res.data;
+            },
+            back() {
+                window.history.go(-1)
+            }
+        }
+    };
+    const app = Vue.createApp(App);
+    app.use(ElementPlus);
+    app.mount("#app");
+</script>
+
+<style>
+    #app {
+        height: 100%;
+        display: flex;
+    }
+
+    .login_right {
+        padding: 10px 20px;
+        flex: 1;
+    }
+    /* 登录小容器 */
+    .login_box {
+        box-sizing: border-box;
+        width: 480px;
+        border-radius: 15px;
+        box-shadow: 0 20px 50px 0 hsl(0deg 0% 64% / 29%);
+        margin: 10px auto 0;
+        padding: 25px 30px;
+    }
+</style>
+
+

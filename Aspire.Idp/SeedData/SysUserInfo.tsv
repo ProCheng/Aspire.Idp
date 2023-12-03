@@ -1,0 +1,20 @@
+[
+    {
+        "uID": 1,
+        "uLoginName": "2263666854",
+        "uLoginPWD": "",
+        "uRealName": "zengcheng",
+        "uStatus": 0,
+        "uRemark": null,
+        "uCreateTime": "\/Date(1640537800000+0800)\/",
+        "uUpdateTime": "\/Date(1640537800000+0800)\/",
+        "uLastErrTime": "\/Date(1640537800000+0800)\/",
+        "uErrorCount": 0,
+        "name": "西柚",
+        "sex": 1,
+        "age": 22,
+        "birth": "\/Date(1640537800000+0800)\/",
+        "addr": "中国",
+        "tdIsDelete": "0"
+    }
+]

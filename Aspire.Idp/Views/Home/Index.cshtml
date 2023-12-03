@@ -1,0 +1,108 @@
+﻿@using IdentityServer4.Extensions
+@{
+   
+}
+
+
+<div id="app">
+
+    <el-row justify="center">
+        <el-image style="height: 150px;" src="/logofull.png" fit="cover"></el-image>
+    </el-row>
+    <el-row justify="center">
+        <el-text>欢迎来到 Aspire.Idp认证授权中心</el-text>
+    </el-row>
+    <el-row justify="center" style="margin-top: 80px;">
+        <el-col :span="6">
+            <el-card>
+                <template #header>
+                    <div class="card-header">
+                        <el-text>持久授权</el-text>
+                    </div>
+                </template>
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <el-icon size="40">
+                        <search></search>
+                    </el-icon>
+                    <el-button type="primary" href="/Grants/Index" tag="a" style="width: 100%;margin-top: 15px;font-weight: 600;height: 55px;">
+                        查看
+                    </el-button>
+                </div>
+            </el-card>
+        </el-col>
+        <el-col :span="6" style="margin: 0 30px;">
+            <el-card>
+                <template #header>
+                    <div class="card-header">
+                        <el-text>发现文档</el-text>
+                    </div>
+                </template>
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <el-icon size="40">
+                        <lock></lock>
+                    </el-icon>
+                    <el-button href="/.well-known/openid-configuration" tag="a" style="width: 100%;margin-top: 15px;font-weight: 600;height: 55px;">
+                        发现文档
+                    </el-button>
+                </div>
+            </el-card>
+        </el-col>
+        <el-col :span="6">
+            <el-card>
+                <template #header>
+                    <div class="card-header">
+                        <el-text>各模式配置</el-text>
+                    </div>
+                </template>
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <el-icon size="40">
+                        <setting></setting>
+                    </el-icon>
+                    <el-button href="/Grants/Config" tag="a" style="width: 100%;margin-top: 15px;font-weight: 600;height: 55px;">
+                        各模式配置
+                    </el-button>
+                </div>
+            </el-card>
+        </el-col>
+    </el-row>
+</div>
+
+
+
+<script>
+    const App = {
+        data() {
+            return {
+
+            }
+        },
+        methods: {
+        }
+    };
+    const app = Vue.createApp(App);
+    app.use(ElementPlus);
+    // 通过遍历的方式注册所有 svg组件，会牺牲一点点性能
+    for (let i in ElementPlusIconsVue) {
+        app.component(i, ElementPlusIconsVue[i])
+    }
+    app.mount("#app");
+</script>
+
+<style>
+    #app{
+
+    }
+    .el-card__header{
+        background-color: rgba(0,0,0,.03);
+        text-align: center;
+        font-weight: 600;
+        padding: 10px 0;
+    }
+    .card-header .el-text {
+        font-size: 20px;
+    }
+</style>
+
+
+
+

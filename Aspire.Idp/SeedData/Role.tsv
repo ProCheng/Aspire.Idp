@@ -1,0 +1,16 @@
+[
+    {
+        "IsDeleted": "0",
+        "Name": "SuperAdmin",
+        "Description": "超级管理",
+        "OrderSort": 0,
+        "Enabled": "1",
+        "CreateId": 1,
+        "CreateBy": "2263666854",
+        "CreateTime": "\/Date(1640537800000+0800)\/",
+        "ModifyId": null,
+        "ModifyBy": null,
+        "ModifyTime": "\/Date(1640537800000+0800)\/",
+        "Id": 1
+    }
+]

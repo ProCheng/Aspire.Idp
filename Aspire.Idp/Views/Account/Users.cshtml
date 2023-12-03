@@ -1,0 +1,101 @@
+﻿@model List<Aspire.Idp.Models.ApplicationUser>
+@{
+
+}
+
+<div id="app" class="container">
+  
+    <el-row>
+        <el-col :span="22">
+            <el-button v-on:click="HandleAdd" type="primary">注册用户</el-button>
+        </el-col>
+    </el-row>
+    
+
+    <el-table :data="tableData" stripe style="width: 100%" height="520">
+        <el-table-column prop="Id" label="Id"></el-table-column>
+        <el-table-column prop="LoginName" label="LoginName"></el-table-column>
+        <el-table-column prop="UserName" label="UserName"></el-table-column>
+        <el-table-column prop="birth" label="Birth"></el-table-column>
+        <el-table-column prop="AccessFailedCount" label="AccessFailedCount"></el-table-column>
+        <el-table-column label="操作">
+            <template #default="scope">
+                <el-button size="small" v-on:click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                <el-button size="small"
+                           type="danger"
+                v-on:click="handleDelete(scope.$index, scope.row)">删除</el-button>
+            </template>
+        </el-table-column>
+    </el-table>
+    <div class="pagination">
+        <el-pagination v-model:current-page="currentPage"
+                       v-model:page-size="pageSize"
+                       :page-sizes="[10, 20, 50 ]"
+                       layout="total, sizes, prev, pager, next"
+                       :total="total"
+                       v-on:size-change="handleSizeChange"
+                       v-on:current-change="handleCurrentChange" ></el-pagination>
+    </div>
+
+</div>
+<script>
+    const App = {
+        data() {
+            return {
+                tableData: [],
+                currentPage: 1,
+                pageSize: 20,
+                total: 0
+            };
+        },
+        mounted() {
+        
+            this.handleCurrentChange();
+        },
+        methods: {
+            HandleAdd() {
+                window.location.href = '/Account/Register';
+
+            },
+            handleEdit(index,row) {
+                window.location.href = '/Account/Edit/' + row['Id'];
+            },
+            async handleDelete(index, row) {
+
+                ElementPlus.ElMessageBox.confirm('确认删除该用户?', '警告', {
+                    confirmButtonText: "确认",
+                    cancelButtonText: "取消",
+                }).then(async () => {
+                    await axios.delete('/Account/Delete/' + row['Id'])
+                    ElementPlus.ElMessage({
+                        message: "删除成功",
+                        type: 'success',
+                    })
+                    await this.handleCurrentChange()
+
+                })
+            }
+            ,
+            async handleCurrentChange() {
+                
+                let { data: res } = await axios.get('/Account/Users', {
+                    params: {
+                        page: this.currentPage,
+                        rows: this.pageSize
+                    }
+                })
+                this.tableData = res.response.data;
+                this.total = res.response.total;
+            },
+            handleSizeChange(n) {
+                this.pageSize = n;
+                this.handleCurrentChange()
+            }
+
+        }
+    };
+    const app = Vue.createApp(App);
+    app.use(ElementPlus);
+    app.mount("#app");
+</script>
+

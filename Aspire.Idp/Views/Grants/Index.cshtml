@@ -1,0 +1,102 @@
+﻿@model GrantsViewModel
+
+
+<div id="app">
+    @Html.AntiForgeryToken()
+    <el-card style="margin: 10px 50px;">
+        <template #header>
+            <h3>
+                客户端应用程序权限-下面是您已授予权限的应用程序以及它们可以访问的资源的列表
+            </h3>
+        </template>
+
+        <template v-if="grants.length==0">
+            <el-alert title="您没有授予任何应用程序的访问权限" type="info" :closable="false" />
+        </template>
+
+        <el-card v-for="(item,index) in grants" shadow="never">
+            <template #header>
+                <div style="display:flex;justify-content: space-between;align-items:center;">
+                    <img v-if="item.ClientLogoUrl" :src="item.ClientLogoUrl" />
+                    <el-text type="primary" size="large">{{item.ClientName}}</el-text>
+                    <el-button type="danger" round v-on:click="submit(item.ClientId)">撤销访问权限</el-button>
+                </div>
+            </template>
+
+            <div class="description-section">
+                
+                <p>
+                    <span>创建时间</span>
+                    <el-tag type="success">{{ FormatDateTime(item.Created) }}</el-tag>
+                </p>
+                <p v-if="item.Expires">
+                    <span>过期时间</span>
+                    <el-tag type="success">{{ FormatDateTime(item.Expires) }}</el-tag>
+                </p>
+                <p>
+                    <span>身份授予</span>
+                    <el-tag type="success" v-for="item1 in item.IdentityGrantNames">{{item1}}</el-tag>
+                </p>
+                <p>
+                    <span>API授权</span>
+                    <el-tag type="success" v-for="item1 in item.ApiGrantNames">{{item1}}</el-tag>
+                </p>
+                <p v-if="item.Description">
+                    <span>描述</span>
+                    <el-tag type="success">{{item.Description}}</el-tag>
+                </p>
+            </div>
+        </el-card>
+
+    </el-card>
+
+</div>
+<script>
+    const App = {
+        data() {
+            return {
+                grants: @Html.Raw(JsonConvert.SerializeObject(Model.Grants))
+            }
+        },
+        methods: {
+            async submit(id) { 
+              
+                ElementPlus.ElMessageBox.confirm('确认撤回访问权限?', '警告', {
+                    confirmButtonText: "确认",
+                    cancelButtonText: "取消",
+                }).then(async () => {
+                    await axios.delete('/Grants/Delete/' + id)
+                    ElementPlus.ElMessage({
+                        message: "操作成功",
+                        type: 'success',
+                    })
+                    location.href = location.href
+                })
+
+            },
+            FormatDateTime(date) { 
+                return Tools.FormatDateTime(date, "yyyy-MM-dd HH:mm:ss");
+            },
+           
+        }
+    };
+    const app = Vue.createApp(App);
+    app.use(ElementPlus);
+    app.mount("#app");
+</script>
+
+
+<style>
+    .description-section {
+        margin-bottom: 20px;
+    }
+    .description-section p {
+        margin-bottom: 10px;
+        line-height: 1.5;
+    }
+
+    .description-section span {
+        font-weight: bold;
+        margin-right: 10px;
+    }
+</style>

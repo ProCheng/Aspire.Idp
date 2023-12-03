@@ -1,0 +1,96 @@
+﻿@using IdentityServer4.Extensions
+@{
+
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+@*     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+ *@    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Idp_Aspire</title>
+    <link rel="icon" type="image/x-icon" href="~/favicon.ico" />
+    <link rel="shortcut icon" type="image/x-icon" href="~/favicon.ico" />
+    <link rel="stylesheet" href="~/css/global.min.css" />
+
+
+    <!-- Import style -->
+    <link rel="stylesheet" href="https://unpkg.com/element-plus@2.4.2/dist/index.css" />
+    <!-- Import Vue 3 -->
+@*     <script src="//unpkg.com/vue@3.3.8/dist/vue.global.prod.js"></script>
+ *@   
+    <script src="https://unpkg.com/vue@3.3.8/dist/vue.global.js"></script>
+    <!-- Import component library -->
+    <script src="https://unpkg.com/element-plus@2.4.2/dist/index.full.min.js"></script>
+
+    <script src="https://unpkg.com/axios@1.6.2/dist/axios.min.js"></script>
+
+    <script src="https://unpkg.com/@@element-plus/icons-vue@2.1.0/dist/index.iife.min.js"></script>
+
+
+    <script src="~/js/tools.js"></script>
+
+
+    <script defer>
+        axios.defaults.baseURL = window.location.origin;
+        
+        // 添加请求拦截器
+        axios.interceptors.request.use(function (config) {
+            // 在发送请求之前做些什么
+            let RequestVerificationToken = document.querySelector('input[name=__RequestVerificationToken]');
+            if (RequestVerificationToken) {
+                config.headers['RequestVerificationToken'] = RequestVerificationToken.value;
+            }
+            
+            // 如果有returnRul自动携带
+            let returnUrl = new URLSearchParams(window.location.search).get('ReturnUrl');
+            if (returnUrl) {
+                config.url += (config.url.includes('?') ? '&' : '?') + 'ReturnUrl=' + encodeURIComponent(returnUrl);
+            }
+
+            return config;
+        }, function (error) {
+            // 对请求错误做些什么
+            return Promise.reject(error);
+        });
+
+        // 添加响应拦截器
+        axios.interceptors.response.use(function (response) {
+            // 2xx 范围内的状态码都会触发该函数。
+            // 对响应数据做点什么
+            return response;
+        }, function (error) {
+            // 超出 2xx 范围的状态码都会触发该函数。
+            // 对响应错误做点什么
+            ElementPlus.ElMessage({
+                message: error.response.data,
+                type: 'warning',
+            })
+            return Promise.reject(error);
+        });
+
+    </script>
+</head>
+
+
+<body id="body">
+
+        <header>
+            <partial name="_Header" />
+        </header>
+
+        <main>
+            @RenderBody()
+        </main>
+
+    @if (!Context.Request.Path.ToString().Contains("/OAuth2/Authorize", StringComparison.OrdinalIgnoreCase) &&
+    !Context.Request.Path.ToString().Contains("/Account/Register", StringComparison.OrdinalIgnoreCase))
+        {
+            <footer>
+                <partial name="_Footer" />
+            </footer>
+        }
+
+</body>
+</html>
+

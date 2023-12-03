@@ -1,0 +1,35 @@
+{
+    "profiles": {
+        "Aspire.Idp": {
+            "commandName": "Project",
+            "launchBrowser": false,
+            //"launchUrl": "http://localhost:5004",
+            "applicationUrl": "http://*:5004",
+            "environmentVariables": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "endpoints": {
+                "http": {
+                    "address": "http://*:5004",
+                    "binding": {
+                        "protocol": "http",
+                        "port": 5004
+                    }
+                },
+                "https": {
+                    "address": "https://*:443",
+                    "binding": {
+                        "protocol": "https",
+                        "port": 443
+                    }
+                }
+            }
+        },
+        "Docker": {
+            "commandName": "Docker",
+            "launchBrowser": true,
+            "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/",
+            "publishAllPorts": true
+        }
+    }
+}
